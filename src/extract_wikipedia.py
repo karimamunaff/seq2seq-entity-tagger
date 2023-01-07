@@ -8,6 +8,9 @@ import typer
 from tqdm import tqdm
 
 from paths import WIKIPEDIA_BZ2_XML_FILE, WIKIPEDIA_PROCESSED_DIRECTORY
+from logger import get_logger
+
+_LOGGER = get_logger(__file__)
 
 
 @dataclass
@@ -47,8 +50,8 @@ def iterate_articles(xmlfile: BZ2File) -> WikipediaArticle:
 
 
 def save_articles(articles_collection: List[Dict], save_index: int) -> None:
-    print("saving ...")
     save_filename = WIKIPEDIA_PROCESSED_DIRECTORY / f"articles_{save_index}.json"
+    _LOGGER.info(f"saving to file {save_filename}")
     with open(save_filename, "w+") as f:
         json.dump(articles_collection, f)
 
@@ -61,6 +64,7 @@ def extract_wikipedia_dump(save_every: int = 1000, max_articles: int = 10000) ->
         for index, article in tqdm(enumerate(iterate_articles(xmlfile))):
             articles_collection.append(article.__dict__)
             if index % save_every == 0 and index > 0:
+                _LOGGER.info(f"Processed {index} wikipedia articles")
                 save_articles(articles_collection, int(index / save_every))
                 articles_collection = []
             if index > max_articles:
