@@ -53,7 +53,7 @@ def save_articles(articles_collection: List[Dict], save_index: int) -> None:
         json.dump(articles_collection, f)
 
 
-def process_wikipedia_dump(save_every: int = 1000, max_articles: int = 10000) -> None:
+def extract_wikipedia_dump(save_every: int = 1000, max_articles: int = 10000) -> None:
     progress_bar = tqdm()
     progress_bar.set_description("Processing Wikipedia Articles ...")
     articles_collection = []
@@ -70,4 +70,4 @@ def process_wikipedia_dump(save_every: int = 1000, max_articles: int = 10000) ->
 
 
 if __name__ == "__main__":
-    typer.run(process_wikipedia_dump)
+    typer.run(extract_wikipedia_dump)
