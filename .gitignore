@@ -1,0 +1,8 @@
+.vscode
+
+logs/*
+src/__pycache__
+
+data/*
+!data/wikipedia
+data/wikipedia/*
