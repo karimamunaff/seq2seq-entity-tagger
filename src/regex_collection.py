@@ -1,2 +1,5 @@
-LINKS_REGEX = r"(?<=\[\[).+?(?=\]\])"
+LINKS_REGEX = r"\[\[(?:[^\]|]*\|)?([^\]|]*)\]\]"
+ARTICLE_TEMPLATE_REGEX = r"\{\{.*?\}\}"
+FORMATTED_ENTITY_REGEX = r"[\[].*?[\]]"
+# LINKS_REGEX = r"(?<=\[\[).+?(?=\]\])"
 # LINKS_REGEX = r"\[\[.*?\]\]"

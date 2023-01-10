@@ -11,5 +11,6 @@ setup_project:
 extract_wikipedia:
 	poetry run python src/extract_wikipedia.py --save-every=$(SAVE_JSON_EVERY) --max-articles=$(MAX_WIKIPEDIA_ARTICLES)
 
-
-
+.PHONY: prepare_training_data
+prepare_training_data:
+	poetry run python src/prepare_training_data.py --max-articles=$(MAX_WIKIPEDIA_ARTICLES)
