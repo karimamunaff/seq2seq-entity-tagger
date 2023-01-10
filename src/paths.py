@@ -19,4 +19,7 @@ WIKIPEDIA_PROCESSED_DIRECTORY.mkdir(exist_ok=True)
 TEST_DATA_DIRECTORY = PROJECT_DIRECTORY / "tests" / "data"
 TEST_ARTICLES = TEST_DATA_DIRECTORY / "test_articles.json"
 
+MODELS_DIRECTORY = DATA_DIRECTORY / "models"
+MODELS_DIRECTORY.mkdir(exist_ok=True)
+
 _LOGGER.info(f"Using Data Directory: {DATA_DIRECTORY}")

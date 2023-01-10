@@ -6,7 +6,7 @@ from typing import List, Dict
 from tqdm import tqdm
 
 
-class PreprocessArticle:
+class SentencesExtractor:
     def __init__(self) -> None:
         self.redirects = self.get_redirects()
 
@@ -80,5 +80,5 @@ class PreprocessArticle:
 if __name__ == "__main__":
     # test code
     test_articles = json.loads(TEST_ARTICLES.read_text())
-    preprocessor = PreprocessArticle()
-    sentences = preprocessor.get_sentences(test_articles[1]["text"])
+    sentences_extractor = SentencesExtractor()
+    sentences = sentences_extractor.get_sentences(test_articles[1]["text"])
