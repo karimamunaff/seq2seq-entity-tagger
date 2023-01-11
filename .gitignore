@@ -5,4 +5,6 @@ src/__pycache__
 
 data/*
 !data/wikipedia
+!data/training_config.json
+!data/training_config_default.json
 data/wikipedia/*

@@ -1,10 +1,8 @@
 from typing import List
-
-import typer
 from datasets import Dataset, DatasetDict, load_dataset
 from transformers import AutoTokenizer
-from transformers import DataCollatorForSeq2Seq
 from pathlib import Path
+from config import config
 
 from config import (
     MAX_SEQUENCE_LENGTH,
@@ -15,8 +13,6 @@ from config import (
 )
 from paths import WIKIPEDIA_PROCESSED_DIRECTORY
 
-T5_ENTITY_PREFIX = "Tag Entities: "
-T5_MODEL = "t5-small"
 WIKIPEDIA_TRAINING_FILES = [
     str(path) for path in list(WIKIPEDIA_PROCESSED_DIRECTORY.glob("train*.csv"))
 ]
@@ -84,11 +80,11 @@ class ModelInputs:
 
 
 def get_model_inputs(
-    training_data_directory: Path = WIKIPEDIA_PROCESSED_DIRECTORY,
-    model_name: str = T5_MODEL,
-    input_sentence_prefix: str = T5_ENTITY_PREFIX,
-    training_files_prefix: str = "train",
-    training_files_extention: str = "csv",
+    training_data_directory: str,
+    model_name: str,
+    input_sentence_prefix: str,
+    training_files_prefix: str,
+    training_files_extention: str,
 ) -> DatasetDict:
     training_files = [
         str(path)
@@ -105,7 +101,3 @@ def get_model_inputs(
     )
 
     return dataset
-
-
-if __name__ == "__main__":
-    typer.run(get_model_inputs)

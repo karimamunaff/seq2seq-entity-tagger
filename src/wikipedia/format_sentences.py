@@ -3,12 +3,12 @@ import re
 from typing import List, Union
 
 import pandas
-import typer
 
 from paths import WIKIPEDIA_PROCESSED_DIRECTORY
 from extract_sentences import SentencesExtractor
 from regex_collection import FORMATTED_ENTITY_REGEX
 from logger import get_logger
+from config import config
 
 _LOGGER = get_logger(__file__)
 
@@ -45,21 +45,21 @@ def convert_sentence_toraw(sentence: str) -> str:
 
 
 def save_as_csv(
+    training_filename_prefix: str = "train",
+    training_filenames_extention: str = "csv",
     max_articles: int = 100,
-    training_file_prefix: str = "train",
-    training_file_extension: str = "csv",
 ) -> None:
     save_filename = (
         WIKIPEDIA_PROCESSED_DIRECTORY
-        / f"{training_file_prefix}_{max_articles}.{training_file_extension}"
+        / f"{training_filename_prefix}_{max_articles}.{training_filenames_extention}"
     )
     articles_sentences_collection = extract_article_sentences(max_articles)
     training_data = pandas.DataFrame()
     training_data["formatted"] = articles_sentences_collection
     training_data["raw"] = training_data["formatted"].apply(convert_sentence_toraw)
-    if training_file_extension == "csv":
+    if training_filenames_extention == "csv":
         training_data.to_csv(save_filename, index=False)
-    elif training_file_extension == "parquet":
+    elif training_filenames_extention == "parquet":
         training_data.to_parquet(save_filename, index=False)
     else:
         raise Exception("Files should have .csv or .parquet extention")
@@ -67,4 +67,8 @@ def save_as_csv(
 
 
 if __name__ == "__main__":
-    typer.run(save_as_csv)
+    save_as_csv(
+        training_filename_prefix=config["training_filename_prefix"],
+        training_filenames_extention=config["training_filenames_extention"],
+        max_articles=config["wikipedia_articles_limit"],
+    )

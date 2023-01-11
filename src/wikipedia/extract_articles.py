@@ -7,7 +7,8 @@ from typing import Dict, List
 import typer
 from tqdm import tqdm
 
-from paths import WIKIPEDIA_BZ2_XML_FILE, WIKIPEDIA_PROCESSED_DIRECTORY
+from src.paths import WIKIPEDIA_BZ2_XML_FILE, WIKIPEDIA_PROCESSED_DIRECTORY
+from src.config import config
 from logger import get_logger
 
 _LOGGER = get_logger(__file__)
@@ -69,7 +70,7 @@ def save_intermediate(
     )
 
 
-def extract_wikipedia_dump(save_every: int = 1000, max_articles: int = 10000) -> None:
+def extract_wikipedia_dump(save_every: int = 1000) -> None:
     progress_bar = tqdm()
     progress_bar.set_description("Processing Wikipedia Articles ...")
     articles_collection = []
@@ -89,11 +90,15 @@ def extract_wikipedia_dump(save_every: int = 1000, max_articles: int = 10000) ->
                 )
                 articles_collection = []
                 redirects_collection = []
-            if index > max_articles:
-                break
             progress_bar.update(1)
     progress_bar.close()
 
 
+def extract():
+    extract_wikipedia_dump(
+        save_every=config["articles_per_shard"],
+    )
+
+
 if __name__ == "__main__":
-    typer.run(extract_wikipedia_dump)
+    extract()

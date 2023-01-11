@@ -15,3 +15,6 @@ def get_predictions(example):
     outputs = model(**example_tokenized)
     predictions = outputs.logits.argmax(-1)
     return tokenizer.decode(predictions[0])
+
+
+a = 1

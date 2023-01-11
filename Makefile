@@ -1,9 +1,7 @@
 
+WIKIPEDIA_DUMP_DATE ?= 20220701
 USER_DATA_DIRECTORY ?= data/
-MAX_WIKIPEDIA_ARTICLES ?= 10000
-SAVE_JSON_EVERY ?= 1000
-TRAINING_FILE_PREFIX ?= train
-TRAINING_FILE_EXTENTION ?= csv
+USER_MODELS_DIRECTORY ?= models/
 
 MODEL_NAME ?= t5-small
 INPUT_SENTENCE_PREFIX ?= "Tag Entities: "
@@ -13,14 +11,18 @@ TRAINING_DATA_DIRECTORY ?= $(USER_DATA_DIRECTORY)
 setup_project:
 	poetry install
 
+.PHONY wikipedia/download
+wikipedia/download:
+	wget https://dumps.wikimedia.org/enwiki/${WIKIPEDIA_DUMP_DATE}/enwiki-$(WIKIPEDIA_DUMP_DATE)-pages-articles.xml.bz2 -P $(USER_DATA_DIRECTORY)
+
 .PHONY: wikipedia/extract_articles
 wikipedia/extract_articles:
-	poetry run python src/wikipedia/extract_articles.py --save-every=$(SAVE_JSON_EVERY) --max-articles=$(MAX_WIKIPEDIA_ARTICLES)
+	poetry run python src/wikipedia/extract_articles.py
 
 .PHONY: wikipedia/format_sentences
 wikipedia/format_sentences:
-	poetry run python src/wikipedia/format_sentences.py --max-articles=$(MAX_WIKIPEDIA_ARTICLES) --training-file-prefix=$(TRAINING_FILE_PREFIX) --training-file-extention=$(TRAINING_FILE_EXTENTION)
+	poetry run python src/wikipedia/format_sentences.py
 
-.PHONY: prepare_model_inputs
-prepare_model_inputs:
-	poetry run python src/prepare_model_inputs.py --training-file-prefix=$(TRAINING_FILE_PREFIX) --training-file-extention=$(TRAINING_FILE_EXTENTION) --model-name=$(MODEL_NAME) --input-sentence-prefix=$(INPUT_SENTENCE_PREFIX) --training_data_directory=$(TRAINING_DATA_DIRECTORY)
+.PHONY: train
+train:
+	poetry run python src/train_model.py
