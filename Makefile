@@ -7,10 +7,6 @@ MODEL_NAME ?= t5-small
 INPUT_SENTENCE_PREFIX ?= "Tag Entities: "
 TRAINING_DATA_DIRECTORY ?= $(USER_DATA_DIRECTORY)
 
-.PHONY: .env
-.env:
-	@bash -c "echo 'PYTHONPATH=${PWD}:${PYTHONPATH}/src' > .env"
-
 .PHONY: setup_project
 setup_project: .env
 	#poetry install
