@@ -1,6 +1,6 @@
 from pathlib import Path
 import os
-from logger import get_logger
+from src.logger import get_logger
 
 _LOGGER = get_logger(__file__)
 
@@ -19,7 +19,7 @@ MODELS_DIRECTORY = (
 MODELS_DIRECTORY.mkdir(exist_ok=True)
 
 
-CONFIG_PATH = DATA_DIRECTORY / "training_config.json"
+CONFIG_PATH = DEFAULT_DATA_DIRECTORY / "training_config.json"
 
 WIKIPEDIA_DUMP_DATE = os.environ.get("WIKIPEDIA_DUMP_DATE")
 WIKIPEDIA_DIRECTORY = DATA_DIRECTORY / WIKIPEDIA_DUMP_DATE

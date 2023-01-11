@@ -4,12 +4,11 @@ from bz2 import BZ2File
 from dataclasses import dataclass
 from typing import Dict, List
 
-import typer
 from tqdm import tqdm
 
-from src.paths import WIKIPEDIA_BZ2_XML_FILE, WIKIPEDIA_PROCESSED_DIRECTORY
-from src.config import config
 from logger import get_logger
+from src.config import config
+from src.paths import WIKIPEDIA_BZ2_XML_FILE, WIKIPEDIA_PROCESSED_DIRECTORY
 
 _LOGGER = get_logger(__file__)
 
@@ -96,7 +95,7 @@ def extract_wikipedia_dump(save_every: int = 1000) -> None:
 
 def extract():
     extract_wikipedia_dump(
-        save_every=config["articles_per_shard"],
+        save_every=config["data"]["articles_per_shard"],
     )
 
 

@@ -4,9 +4,9 @@ from typing import List, Union
 
 import pandas
 
-from paths import WIKIPEDIA_PROCESSED_DIRECTORY
-from extract_sentences import SentencesExtractor
-from regex_collection import FORMATTED_ENTITY_REGEX
+from src.paths import WIKIPEDIA_PROCESSED_DIRECTORY
+from src.wikipedia.extract_sentences import SentencesExtractor
+from src.regex_collection import FORMATTED_ENTITY_REGEX
 from logger import get_logger
 from config import config
 
@@ -44,6 +44,19 @@ def convert_sentence_toraw(sentence: str) -> str:
     return sentence_noextra_whitespaces
 
 
+def is_bad_sentence(
+    sentence: str, bad_characters: List[str] = "{|[]", min_sentence_length=5
+) -> str:
+    return (
+        any(character in bad_characters for character in sentence)
+        or len(sentence.split()) <= min_sentence_length
+    )
+
+
+def filter_bad_sentences(training_data: pandas.DataFrame) -> pandas.DataFrame:
+    return training_data[~training_data["raw"].apply(is_bad_sentence)]
+
+
 def save_as_csv(
     training_filename_prefix: str = "train",
     training_filenames_extention: str = "csv",
@@ -56,7 +69,10 @@ def save_as_csv(
     articles_sentences_collection = extract_article_sentences(max_articles)
     training_data = pandas.DataFrame()
     training_data["formatted"] = articles_sentences_collection
+    _LOGGER.info(f"Filtering Training data file {save_filename}")
     training_data["raw"] = training_data["formatted"].apply(convert_sentence_toraw)
+    _LOGGER.info(f"Rows after filtering {len(training_data)}")
+    training_data = filter_bad_sentences(training_data)
     if training_filenames_extention == "csv":
         training_data.to_csv(save_filename, index=False)
     elif training_filenames_extention == "parquet":
@@ -68,7 +84,7 @@ def save_as_csv(
 
 if __name__ == "__main__":
     save_as_csv(
-        training_filename_prefix=config["training_filename_prefix"],
-        training_filenames_extention=config["training_filenames_extention"],
-        max_articles=config["wikipedia_articles_limit"],
+        training_filename_prefix=config["data"]["training_filenames_prefix"],
+        training_filenames_extention=config["data"]["training_filenames_extention"],
+        max_articles=config["data"]["wikipedia_articles_limit"],
     )

@@ -1,21 +1,11 @@
 from typing import List
 from datasets import Dataset, DatasetDict, load_dataset
 from transformers import AutoTokenizer
-from pathlib import Path
-from config import config
+from src.paths import WIKIPEDIA_PROCESSED_DIRECTORY
+from src.config import config
+from src.logger import get_logger
 
-from config import (
-    MAX_SEQUENCE_LENGTH,
-    RANDOM_SEED,
-    TEST_SPLIT_RATIO,
-    TRUNCATE_SENTENCES,
-    VALIDATION_SPLIT_RATIO,
-)
-from paths import WIKIPEDIA_PROCESSED_DIRECTORY
-
-WIKIPEDIA_TRAINING_FILES = [
-    str(path) for path in list(WIKIPEDIA_PROCESSED_DIRECTORY.glob("train*.csv"))
-]
+_LOGGER = get_logger(__file__)
 
 
 class ModelInputs:
@@ -30,23 +20,35 @@ class ModelInputs:
         self.tokenizer = AutoTokenizer.from_pretrained(model_name)
         self.training_files = training_files
 
-    def get_train_dataset(self) -> DatasetDict:
+    def get_train_dataset(
+        self,
+        test_split_ratio: float = config["train"]["test_split_ratio"],
+        validation_split_ratio: float = config["train"]["validation_split_ratio"],
+        dataset_file_extention: str = config["data"]["training_filenames_extention"],
+        random_seed: int = config["general"]["random_seed"],
+    ) -> DatasetDict:
         if not self.training_files:
             raise Exception(
                 f"No Training Files Found at {WIKIPEDIA_PROCESSED_DIRECTORY}"
             )
 
         # load full dataset
-        full_dataset = load_dataset("csv", data_files=self.training_files)
+        full_dataset = load_dataset(
+            dataset_file_extention, data_files=self.training_files
+        )
 
         # split it into train and test
         train_test_split = full_dataset["train"].train_test_split(
-            test_size=TEST_SPLIT_RATIO, shuffle=True, seed=RANDOM_SEED
+            test_size=test_split_ratio,
+            shuffle=True,
+            seed=random_seed,
         )
 
         # split train further into train and validation
         train_validation_split = train_test_split["train"].train_test_split(
-            test_size=VALIDATION_SPLIT_RATIO, shuffle=True, seed=RANDOM_SEED
+            test_size=validation_split_ratio,
+            shuffle=True,
+            seed=random_seed,
         )
 
         # combine train, validation and test splits
@@ -68,8 +70,8 @@ class ModelInputs:
         input_target_tokenized = self.tokenizer(
             inputs,
             text_target=targets,
-            max_length=MAX_SEQUENCE_LENGTH,
-            truncation=TRUNCATE_SENTENCES,
+            max_length=config["train"]["max_sequence_length"],
+            truncation=config["train"]["truncate_sentences"],
         )
         return input_target_tokenized
 
@@ -80,9 +82,10 @@ class ModelInputs:
 
 
 def get_model_inputs(
-    training_data_directory: str,
     model_name: str,
     input_sentence_prefix: str,
+    training_data_directory: str,
+    training_num_articles: int,
     training_files_prefix: str,
     training_files_extention: str,
 ) -> DatasetDict:
@@ -90,10 +93,11 @@ def get_model_inputs(
         str(path)
         for path in list(
             training_data_directory.glob(
-                f"{training_files_prefix}*.{training_files_extention}"
+                f"{training_files_prefix}_{training_num_articles}*.{training_files_extention}"
             )
         )
     ]
+    _LOGGER.info(f"Using Training Files: {' '.join(training_files)}")
     dataset = ModelInputs(
         training_files=training_files,
         model_name=model_name,
@@ -101,3 +105,16 @@ def get_model_inputs(
     )
 
     return dataset
+
+
+if __name__ == "__main__":
+    from src.config import config
+
+    model_inputs = get_model_inputs(
+        training_data_directory=WIKIPEDIA_PROCESSED_DIRECTORY,
+        model_name=config["train"]["model_name"],
+        input_sentence_prefix=config["data"]["input_sentence_prefix"],
+        training_files_prefix=config["data"]["training_filenames_prefix"],
+        training_files_extention=config["data"]["training_filenames_extention"],
+        training_num_articles=config["data"]["wikipedia_articles_limit"],
+    )

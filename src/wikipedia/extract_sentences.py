@@ -1,6 +1,6 @@
-from paths import TEST_ARTICLES, WIKIPEDIA_PROCESSED_DIRECTORY
+from src.paths import TEST_ARTICLES, WIKIPEDIA_PROCESSED_DIRECTORY
 import json
-from regex_collection import LINKS_REGEX, ARTICLE_TEMPLATE_REGEX
+from src.regex_collection import LINKS_REGEX, ARTICLE_TEMPLATE_REGEX
 import re
 from typing import List, Dict
 from tqdm import tqdm
@@ -21,15 +21,17 @@ class SentencesExtractor:
     @staticmethod
     def get_redirects() -> Dict[str, str]:
         redirects_collection = {}
-        for redirect_file in tqdm(
-            WIKIPEDIA_PROCESSED_DIRECTORY.glob("redirects*.json")
-        ):
+        pbar = tqdm()
+        pbar.set_description("Getting Redirects ...")
+        for redirect_file in WIKIPEDIA_PROCESSED_DIRECTORY.glob("redirects*.json"):
             redirects = json.loads(redirect_file.read_text())
             redirects = {
                 article["title"].lower(): article["text"].lower()
                 for article in redirects
             }
             redirects_collection.update(redirects)
+            pbar.update(1)
+        pbar.close()
         return redirects_collection
 
     @staticmethod

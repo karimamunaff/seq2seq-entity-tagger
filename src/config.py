@@ -1,4 +1,4 @@
-from paths import CONFIG_PATH
+from src.paths import CONFIG_PATH
 import json
 import os
 from typing import Dict
@@ -18,8 +18,8 @@ def _get_current_wikipedia_date() -> int:
 def _update_wikipedia_dumpdate() -> Dict:
     wikipedia_date = _get_current_wikipedia_date()
     config = json.loads(CONFIG_PATH.read_text())
-    if int(config["wikipedia_dump_date"]) != wikipedia_date:
-        config["wikipedia_dump_date"] = wikipedia_date
+    if int(config["data"]["wikipedia_dump_date"]) != wikipedia_date:
+        config["data"]["wikipedia_dump_date"] = wikipedia_date
         with open(CONFIG_PATH, "w+") as f:
             json.dump(config, f)
     return config
