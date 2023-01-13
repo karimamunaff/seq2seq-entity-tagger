@@ -8,3 +8,4 @@ data/*
 !data/training_config.json
 !data/training_config_default.json
 data/wikipedia/*
+.env

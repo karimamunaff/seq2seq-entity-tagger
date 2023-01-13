@@ -67,13 +67,13 @@ class ModelInputs:
     def add_prefix_and_tokenize(self, dataset: Dataset) -> Dataset:
         inputs = [self.add_prefix_to_sentence(sentence) for sentence in dataset["raw"]]
         targets = dataset["formatted"]
-        input_target_tokenized = self.tokenizer(
+        inputs_tokenized = self.tokenizer(
             inputs,
             text_target=targets,
             max_length=config["train"]["max_sequence_length"],
             truncation=config["train"]["truncate_sentences"],
         )
-        return input_target_tokenized
+        return inputs_tokenized
 
     def prepare(self, batched: bool = True) -> Dataset:
         train_dataset = self.get_train_dataset()
@@ -93,7 +93,7 @@ def get_model_inputs(
         str(path)
         for path in list(
             training_data_directory.glob(
-                f"{training_files_prefix}_{training_num_articles}*.{training_files_extention}"
+                f"{training_files_prefix}*_{training_num_articles}.{training_files_extention}"
             )
         )
     ]

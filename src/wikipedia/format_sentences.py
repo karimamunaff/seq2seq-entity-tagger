@@ -45,11 +45,16 @@ def convert_sentence_toraw(sentence: str) -> str:
 
 
 def is_bad_sentence(
-    sentence: str, bad_characters: List[str] = "{|[]", min_sentence_length=5
+    sentence: str,
+    bad_characters: List[str] = "{|[]",
+    min_sentence_length: int = 5,
+    max_sentence_length: int = 128,
 ) -> str:
+    num_words = len(sentence.split())
     return (
         any(character in bad_characters for character in sentence)
-        or len(sentence.split()) <= min_sentence_length
+        or num_words <= min_sentence_length
+        or num_words >= max_sentence_length
     )
 
 

@@ -4,7 +4,7 @@
     },
     "data": {
         "wikipedia_dump_date": 20220701,
-        "wikipedia_articles_limit": 100000,
+        "wikipedia_articles_limit": 1000,
         "articles_per_shard": 10000,
         "input_sentence_prefix": "Tag Entities: ",
         "training_filenames_prefix": "train",
@@ -12,10 +12,10 @@
     },
     "train": {
         "model_name": "t5-small",
-        "num_train_epochs": 5,
+        "num_train_epochs": 1,
         "test_split_ratio": 0.1,
         "validation_split_ratio": 0.1,
-        "learning_rate": 2e-5,
+        "learning_rate": 1e-2,
         "per_device_train_batch_size": 32,
         "per_device_eval_batch_size": 32,
         "evaluation_strategy": "epoch",
