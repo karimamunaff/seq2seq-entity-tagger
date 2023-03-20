@@ -108,7 +108,6 @@ def get_model_inputs(
 
 
 if __name__ == "__main__":
-    from src.config import config
 
     model_inputs = get_model_inputs(
         training_data_directory=WIKIPEDIA_PROCESSED_DIRECTORY,
